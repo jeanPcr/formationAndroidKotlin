@@ -53,7 +53,6 @@ class TaskActivity : AppCompatActivity() {
                 newTask = Task(id = task?.id ?: UUID.randomUUID().toString(), title = title.text.toString())
             }
             intent.putExtra(NEW_TASK,newTask)
-            intent.setClass(this,TaskListFragment::class.java)
             setResult(RESULT_OK,intent)
             finish()
         }
