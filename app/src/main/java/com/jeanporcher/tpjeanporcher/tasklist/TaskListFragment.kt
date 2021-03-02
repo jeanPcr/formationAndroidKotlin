@@ -34,25 +34,25 @@ class TaskListFragment : Fragment() {
         val view = binding.root
         return view
     }
-    private val taskList = mutableListOf<Task>(
-        Task(id = "id_1", title = "Task 1", description = "description 1"),
-        Task(id = "id_2", title = "Task 2"),
-        Task(id = "id_3", title = "Task 3")
-    )
-    private val adapter =TaskListAdapter()
+
+    private val adapter = TaskListAdapter()
     private val tasksRepository = TasksRepository()
 
     private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode==RESULT_OK){
             val resultTask = it.data?.getSerializableExtra("new_task") as? Task
-            val taskIndex = taskList.indexOfFirst { task: Task -> task.id == resultTask!!.id}
+            val list = tasksRepository.tasksList.value!!
+            val taskIndex = list.indexOfFirst { task: Task -> task.id == resultTask!!.id}
 
-            if (taskIndex==-1){
-                taskList.add(resultTask!!)
-            }else{
-                taskList[taskIndex] = resultTask!!
+            lifecycleScope.launch {
+                if (taskIndex==-1){
+
+                        tasksRepository.create(resultTask!!)
+                }else{
+
+                        tasksRepository.update(resultTask!!)
+                }
             }
-            adapter.submitList(taskList.toList())
         }
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,7 +61,7 @@ class TaskListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = adapter
 
-        tasksRepository.taskList.observe(viewLifecycleOwner) { list ->
+        tasksRepository.tasksList.observe(viewLifecycleOwner) { list ->
             adapter.submitList(list.toList())
         }
 
@@ -72,27 +72,26 @@ class TaskListFragment : Fragment() {
             startForResult.launch(intent)
         }
         adapter.onDeleteTask = { task ->
-            taskList.remove(task)
-            adapter.submitList(taskList.toList())
+            lifecycleScope.launch {
+                tasksRepository.delete(task)
+            }
         }
         adapter.onEditTask = { task ->
-            val intent = Intent(activity, TaskActivity::class.java)
-            val EDIT_TASK = "edit_task"
-            intent.putExtra(EDIT_TASK,task)
-            startForResult.launch(intent)
+                val intent = Intent(activity, TaskActivity::class.java)
+                val EDIT_TASK = "edit_task"
+                intent.putExtra(EDIT_TASK,task)
+                startForResult.launch(intent)
         }
     }
 
 
     override fun onResume() {
         super.onResume()
-
         lifecycleScope.launch {
             tasksRepository.refresh()
             val userInfoTxt = view?.findViewById<TextView>(R.id.user_info)
             val userInfo = Api.userService.getInfo().body()!!
             userInfoTxt?.text = "${userInfo.firstName} ${userInfo.lastName}'s to-do list"
-
         }
     }
 

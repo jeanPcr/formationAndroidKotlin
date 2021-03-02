@@ -28,8 +28,7 @@ class TaskActivity : AppCompatActivity() {
                        description.setText(it)
                     }
                 } else{
-                    val toast = Toast(this)
-                    toast.setText("Error: Only text supported into the description")
+                    Toast.makeText(this,"Error: Only text supported into the description",Toast.LENGTH_SHORT).show()
                 }
             }
             else -> {
