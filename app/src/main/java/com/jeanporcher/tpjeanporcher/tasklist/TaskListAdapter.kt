@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.jeanporcher.tpjeanporcher.R
+import com.jeanporcher.tpjeanporcher.task.Task
 
 
 object TasksDiffCallback: DiffUtil.ItemCallback<Task>(){

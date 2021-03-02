@@ -7,8 +7,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.jeanporcher.tpjeanporcher.R
-import com.jeanporcher.tpjeanporcher.tasklist.Task
-import com.jeanporcher.tpjeanporcher.tasklist.TaskListFragment
 import java.util.*
 
 class TaskActivity : AppCompatActivity() {

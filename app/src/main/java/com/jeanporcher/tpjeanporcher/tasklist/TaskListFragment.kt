@@ -1,17 +1,25 @@
 package com.jeanporcher.tpjeanporcher.tasklist
 
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jeanporcher.tpjeanporcher.R
 import com.jeanporcher.tpjeanporcher.databinding.FragmentTaskListBinding
+import com.jeanporcher.tpjeanporcher.network.Api
+import com.jeanporcher.tpjeanporcher.repositories.TasksRepository
+import com.jeanporcher.tpjeanporcher.task.Task
 import com.jeanporcher.tpjeanporcher.task.TaskActivity
-import java.util.*
+import kotlinx.coroutines.launch
 
 class TaskListFragment : Fragment() {
     private var _binding: FragmentTaskListBinding? =null
@@ -32,6 +40,7 @@ class TaskListFragment : Fragment() {
         Task(id = "id_3", title = "Task 3")
     )
     private val adapter =TaskListAdapter()
+    private val tasksRepository = TasksRepository()
 
     private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode==RESULT_OK){
@@ -47,11 +56,14 @@ class TaskListFragment : Fragment() {
         }
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val recyclerView = binding.recyclerView
 
+        val recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = adapter
-        adapter.submitList(taskList.toList())
+
+        tasksRepository.taskList.observe(viewLifecycleOwner) { list ->
+            adapter.submitList(list.toList())
+        }
 
         //Floating Action Button
         val fab: View = binding.floatingActionButton
@@ -69,8 +81,21 @@ class TaskListFragment : Fragment() {
             intent.putExtra(EDIT_TASK,task)
             startForResult.launch(intent)
         }
-
     }
+
+
+    override fun onResume() {
+        super.onResume()
+
+        lifecycleScope.launch {
+            tasksRepository.refresh()
+            val userInfoTxt = view?.findViewById<TextView>(R.id.user_info)
+            val userInfo = Api.userService.getInfo().body()!!
+            userInfoTxt?.text = "${userInfo.firstName} ${userInfo.lastName}'s to-do list"
+
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
