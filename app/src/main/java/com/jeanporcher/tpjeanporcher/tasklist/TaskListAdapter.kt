@@ -46,7 +46,6 @@ class TaskListAdapter: ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TasksDi
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
-
         return TaskViewHolder(itemView)
     }
 
