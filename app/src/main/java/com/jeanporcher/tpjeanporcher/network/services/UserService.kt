@@ -1,5 +1,7 @@
 package com.jeanporcher.tpjeanporcher.network.services
 
+import com.jeanporcher.tpjeanporcher.authentication.login.LoginForm
+import com.jeanporcher.tpjeanporcher.authentication.login.LoginResponse
 import com.jeanporcher.tpjeanporcher.userinfo.UserInfo
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -15,5 +17,8 @@ interface UserService {
 
     @PATCH("users")
     suspend fun update(@Body user: UserInfo): Response<UserInfo>
+
+    @POST("users/login")
+    suspend fun login(@Body user: LoginForm): Response<LoginResponse>
 
 }

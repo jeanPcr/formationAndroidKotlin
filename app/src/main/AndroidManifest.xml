@@ -13,6 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TpJeanPorcher">
+        <activity android:name=".authentication.AuthenticationActivity"></activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -22,7 +24,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-        <activity android:name=".userinfo.UserInfoActivity"></activity>
+
+        <activity android:name=".userinfo.UserInfoActivity" />
         <activity android:name=".task.TaskActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
