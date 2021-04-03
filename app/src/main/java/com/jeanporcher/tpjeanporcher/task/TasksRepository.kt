@@ -1,7 +1,6 @@
-package com.jeanporcher.tpjeanporcher.repositories
+package com.jeanporcher.tpjeanporcher.task
 
 import com.jeanporcher.tpjeanporcher.network.Api
-import com.jeanporcher.tpjeanporcher.task.Task
 
 class TasksRepository {
     private val tasksWebService = Api.tasksWebService

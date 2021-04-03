@@ -21,7 +21,6 @@
         android:layout_height="30sp"
         android:layout_gravity="center"
         android:background="@color/white"
-        android:tint="@color/design_default_color_secondary_variant"
         android:layout_marginRight="20sp"
         app:srcCompat="@android:drawable/ic_menu_edit" />
     <ImageButton

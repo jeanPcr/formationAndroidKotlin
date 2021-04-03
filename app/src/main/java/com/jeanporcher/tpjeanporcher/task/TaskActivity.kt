@@ -33,7 +33,6 @@ class TaskActivity : AppCompatActivity() {
             }
             else -> {
                 ///edit task
-
                 title.setText(task?.title)
                 description.setText(task?.description)
                 if (task!=null)taskBtn.setText("Edit")

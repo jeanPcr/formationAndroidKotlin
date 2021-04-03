@@ -3,13 +3,13 @@ package com.jeanporcher.tpjeanporcher.tasklist
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.jeanporcher.tpjeanporcher.repositories.TasksRepository
+import com.jeanporcher.tpjeanporcher.task.TasksRepository
 import com.jeanporcher.tpjeanporcher.task.Task
 
 class TaskListViewModel: ViewModel() {
     private val repository = TasksRepository()
     private val _tasksList = MutableLiveData<List<Task>>()
-    public val tasksList: LiveData<List<Task>> = _tasksList
+    val tasksList: LiveData<List<Task>> = _tasksList
 
     suspend fun refresh() {
         val tasks = repository.loadTasks()

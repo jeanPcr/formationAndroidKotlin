@@ -6,17 +6,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.jeanporcher.tpjeanporcher.R
 import com.jeanporcher.tpjeanporcher.databinding.FragmentTaskListBinding
 import com.jeanporcher.tpjeanporcher.network.Api
 import com.jeanporcher.tpjeanporcher.task.Task
 import com.jeanporcher.tpjeanporcher.task.TaskActivity
+import com.jeanporcher.tpjeanporcher.userinfo.UserInfoActivity
 import kotlinx.coroutines.launch
 
 class TaskListFragment : Fragment() {
@@ -37,7 +41,7 @@ class TaskListFragment : Fragment() {
     private val tasksViewModel: TaskListViewModel by viewModels()
 
     private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode==RESULT_OK){
+        if (it.resultCode==RESULT_OK && it.data?.getSerializableExtra("user_info")==null){
             val resultTask = it.data?.getSerializableExtra("new_task") as? Task
             val list = tasksViewModel.tasksList.value!!
             val taskIndex = list.indexOfFirst { task: Task -> task.id == resultTask!!.id}
@@ -54,10 +58,15 @@ class TaskListFragment : Fragment() {
         }
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
+        val imageView: ImageView = view.findViewById(R.id.user_avatar)
         val recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = adapter
+
+        imageView.setOnClickListener(){
+            val intent = Intent(activity, UserInfoActivity::class.java)
+            startForResult.launch(intent)
+        }
 
         tasksViewModel.tasksList.observe(viewLifecycleOwner) { list ->
             adapter.submitList(list.toList())
@@ -82,14 +91,18 @@ class TaskListFragment : Fragment() {
         }
     }
 
-
     override fun onResume() {
         super.onResume()
         lifecycleScope.launch {
             tasksViewModel.refresh()
             val userInfoTxt = view?.findViewById<TextView>(R.id.user_info)
             val userInfo = Api.userService.getInfo().body()!!
-            userInfoTxt?.text = "${userInfo.firstName} ${userInfo.lastName}'s to-do list"
+            userInfoTxt?.text = "${userInfo.firstName} ${userInfo.lastName}"
+            val imageView: ImageView? = view?.findViewById(R.id.user_avatar)
+            imageView?.load(userInfo.avatar){
+                crossfade(true)
+                transformations(CircleCropTransformation())
+            }
         }
     }
 
